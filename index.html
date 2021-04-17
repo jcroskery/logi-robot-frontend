@@ -1,1 +1,120 @@
-hi
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Robot Remote Control</title>
+  <meta name="description" content="Control the Raspberry Pi Robot">
+  <meta name="author" content="Justus">
+
+  <link rel="stylesheet" href="css/main.css">
+
+</head>
+
+<body>
+  <span id="ultrasonic"></span><br>
+  <span id="ultrasonic2"></span><br>
+  <span id="infrared2"></span><br>
+
+  <table id="motorTable">
+      <tr>
+          <th id="motorTitle" colspan="3">Motors</th>
+      </tr>
+      <tr>
+          <td id = "drive">Drive: 0</td>
+          <td id = "turn" colspan="2">Turn: 0</td>
+      </tr>
+      <tr>
+          <td id="verticalSliderCell" rowspan="2">
+               <canvas class="slider" id="verticalSlider" width="40" height="200"></canvas>
+          </td>
+          <td id="horizontalSliderCell" colspan="2">
+               <canvas class="slider" id="horizontalSlider" width="200" height="40"></canvas>
+          </td>
+      </tr>
+      <tr>
+          <td id="left">L: 0</td>
+          <td id="right">R: 0</td>
+      </tr>
+  </table>
+
+  <div id="infrared">
+      Infrared
+  </div>
+
+  <table class="dataTable" id="gyroTable">
+      <tr>
+        <th>Gyroscope</th>
+        <th>Speed (&#176;/s)</th>
+        <th class="resetOnClick" id="gyropos">Position (&#176;)</th>
+      </tr>
+      <tr>
+        <th>Forward tilt</th>
+        <td id="gyrospeed0"></td>
+        <td id="gyropos0" class="resetOnClick"></td>
+      </tr>
+      <tr>
+        <th>Side tilt</th>
+        <td id="gyrospeed1"></td>
+        <td id="gyropos1" class="resetOnClick"></td>
+      </tr>
+      <tr>
+        <th>Clockwise turn</th>
+        <td id="gyrospeed2"></td>
+        <td id="gyropos2" class="resetOnClick"></td>
+      </tr>
+  </table>
+
+  <table class="dataTable" id="accelTable">
+      <tr>
+        <th>Accelerometer</th>
+        <th>Acceleration (cm/s<sup>2</sup>)</th>
+        <th class="resetOnClick" id="accelspeed">Speed (cm/s)</th>
+      </tr>
+      <tr>
+        <th>Left</th>
+        <td id="accel0"></td>
+        <td id="accelspeed0" class="resetOnClick"></td>
+      </tr>
+      <tr>
+        <th>Forward</th>
+        <td id="accel1"></td>
+        <td id="accelspeed1" class="resetOnClick"></td>
+      </tr>
+      <tr>
+        <th>Up</th>
+        <td id="accel2"></td>
+        <td id="accelspeed2" class="resetOnClick"></td>
+      </tr>
+  </table>
+
+  <table class="dataTable" id="servoTable">
+      <tr>
+        <th colspan="2">
+            <span id="servoTitle">Servos</span>
+            <div id="limSlider">
+                <span id="limSlider1">fixed</span><span id="limSlider2">lim</span><span id="limSlider3">fixed</span>
+            </div>
+        </th>
+      </tr>
+      <tr>
+          <td class="servoCanvasCell">
+              <span>Infrared (front):</span>
+              <br>
+              <span id="infrared1"></span>
+              <canvas id="infraredCanvas" width="200" height="200"></canvas>
+          </td>
+          <td class="servoCanvasCell">
+              <span>Ultrasonic (top):</span>
+              <br>
+              <span id="ultrasonic1"></span>
+              <canvas id="ultrasonicCanvas" width="200" height="200"></canvas>
+          </td>
+      </tr>
+  </table>
+
+
+  <script src="js/main.js"></script>
+</body>
+</html>

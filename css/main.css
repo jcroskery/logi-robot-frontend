@@ -1,0 +1,102 @@
+#motorTable {
+    border: 2px solid black;
+    border-collapse: collapse;
+    font-size: 20px;
+}
+
+#motorTable th {
+    font-size: 25px;
+}
+
+#motorTable td, #motorTable th {
+    border: 1px solid black;
+    padding: 10px 0px;
+    text-align: center;
+}
+
+.dataTable {
+    border: 1px solid black;
+    border-collapse: collapse;
+    font-size: 17px;
+}
+
+.dataTable td, .dataTable th {
+    border: 1px solid black;
+    padding: 5px 10px;
+    font-family: monospace;
+}
+
+.resetOnClick {
+    cursor: pointer;
+}
+
+.servoCanvasCell {
+    width: 300px;
+    text-align: center;
+}
+
+#servoTitle {
+    margin: auto;
+    display: inline-block;
+    padding: 5px 20px 5px 60px;
+    font-size: 25px;
+}
+
+#limSlider {
+    width: auto;
+    display: inline-block;
+    border-collapse: collapse;
+    background-color: gray;
+    border: 2px solid gray;
+    border-radius: 2px;
+    font-weight: normal;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 20px;
+    position: relative;
+}
+#limSlider span {
+    display: inline-block;
+    width: 70px;
+    cursor: pointer;
+    padding: 7px;
+    border: 0px solid white;
+    border-radius: 2px;
+}
+#limSlider3 {
+    position: absolute;
+    left: 0%;
+    top: 0px;
+    transition: all 0.5s ease;
+    background-color: rgb(255, 255, 255);
+}
+
+
+
+#left, #right {
+    width: 50px;
+    padding: 10px 0px;
+}
+
+#verticalSlider {
+    height: 200px;
+    width: 40px;
+    padding: 0px;
+    margin: 15px 40px;
+}
+
+#horizontalSlider {
+    height: 40px;
+    width: 200px;
+    padding: 0px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+#infrared {
+    background-color: lightskyblue;
+    transition: background-color 1000ms linear;
+    font-size: 25px;
+    display: inline-block;
+    padding: 10px;
+    border: 1px solid black;
+}
