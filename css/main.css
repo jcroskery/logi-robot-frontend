@@ -33,6 +33,7 @@
 .servoCanvasCell {
     width: 300px;
     text-align: center;
+    position: relative;
 }
 
 #servoTitle {
@@ -46,8 +47,8 @@
     width: auto;
     display: inline-block;
     border-collapse: collapse;
-    background-color: gray;
-    border: 2px solid gray;
+    background-color: rgb(68, 194, 51);
+    border: 2px solid rgb(68, 194, 51);
     border-radius: 2px;
     font-weight: normal;
     font-family: Helvetica, Arial, sans-serif;
@@ -100,3 +101,44 @@
     padding: 10px;
     border: 1px solid black;
 }
+
+#infrared1, #ultrasonic2 {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#ultrasonic1, #infrared2 {
+    position: absolute;
+    top: 50%;
+}
+#ultrasonic1 {
+    transform: translateX(-100%);
+}
+#infrared2 {
+    margin-left: 3px;
+}
+
+#infraredCanvas, #ultrasonicCanvas {
+    border: 1px solid black;
+}
+
+
+#ultrasonicDiv {
+    position: relative;
+    text-align: center;
+    width: 500px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+#ultrasonicTitle {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#ultrasonicDetails {
+    position: absolute;
+    left: calc(100px + 0%);
+    top: calc(68px + 0%);
+}
+

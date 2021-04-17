@@ -13,10 +13,6 @@
 </head>
 
 <body>
-  <span id="ultrasonic"></span><br>
-  <span id="ultrasonic2"></span><br>
-  <span id="infrared2"></span><br>
-
   <table id="motorTable">
       <tr>
           <th id="motorTitle" colspan="3">Motors</th>
@@ -99,20 +95,37 @@
         </th>
       </tr>
       <tr>
-          <td class="servoCanvasCell">
+          <td class="servoCanvasCell" id="infraredCell">
               <span>Infrared (front):</span>
               <br>
               <span id="infrared1"></span>
-              <canvas id="infraredCanvas" width="200" height="200"></canvas>
+              <br>
+              <canvas id="infraredCanvas" width="200" height="200">
+              </canvas><span id="infrared2"></span>
+              <br><br>
           </td>
-          <td class="servoCanvasCell">
+          <td class="servoCanvasCell" id="ultrasonicCell">
               <span>Ultrasonic (top):</span>
               <br>
-              <span id="ultrasonic1"></span>
-              <canvas id="ultrasonicCanvas" width="200" height="200"></canvas>
+              <br><span id="ultrasonic1"></span>
+              <canvas id="ultrasonicCanvas" width="200" height="200">
+              </canvas>
+              <br>
+              <span id="ultrasonic2"></span>
+              <br>
           </td>
       </tr>
   </table>
+
+  <div id="ultrasonicDiv">
+    <span id="ultrasonicTitle">Ultrasonic Module (Range: 150 cm)</span><br><br><br>
+    <canvas id="ultrasonicRangerCanvas" width="300" height="300"></canvas>
+    <div id="ultrasonicDetails">
+      <span id="stepper">0</span><span>&#176;</span>
+      <br>
+      <span id="ultrasonic">100</span><span> cm</span>
+    </div>
+  </div>
 
 
   <script src="js/main.js"></script>
