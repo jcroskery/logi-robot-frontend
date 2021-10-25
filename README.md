@@ -5,6 +5,6 @@ The website features:
 - Motor Control
 - Servo Controls
 - Gyroscope/accelerometer data table
-- Ultrasonic range graph - 360°
+- Ultrasonic ranging display
 ## More Details
 For more details, see the [backend repository](https://github.com/jcroskery/rpr) for the robot.
