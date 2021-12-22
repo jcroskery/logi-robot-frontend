@@ -1,9 +1,8 @@
-# rprc (Raspberry Pi Robot Control)
+# logi-robot-frontend (Raspberry Pi Robot Control)
 This code runs on a web server, and interfaces with the [rpr](https://github.com/jcroskery/rpr) repository.
 ## Website Specs
 The website features:
 - Motor Control
-- Servo Controls
 - Gyroscope/accelerometer data table
 - Ultrasonic ranging display
 ## More Details
