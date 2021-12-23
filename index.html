@@ -6,13 +6,14 @@
 
   <title>Robot Remote Control</title>
   <meta name="description" content="Control the Raspberry Pi Robot">
-  <meta name="author" content="Justus">
 
   <link rel="stylesheet" href="css/main.css">
 
 </head>
 
 <body>
+  <div id="flex">
+  <img id="cameraImg" width="640" height="426">
   <table id="motorTable">
       <tr>
           <th id="motorTitle" colspan="3">Motors</th>
@@ -35,10 +36,6 @@
       </tr>
   </table>
 
-  <div id="infrared">
-      Infrared
-  </div>
-
   <table class="dataTable" id="gyroTable">
       <tr>
         <th>Gyroscope</th>
@@ -60,9 +57,6 @@
         <td id="gyrospeed2"></td>
         <td id="gyropos2" class="resetOnClick"></td>
       </tr>
-  </table>
-
-  <table class="dataTable" id="accelTable">
       <tr>
         <th>Accelerometer</th>
         <th>Acceleration (cm/s<sup>2</sup>)</th>
@@ -84,47 +78,13 @@
         <td id="accelspeed2" class="resetOnClick"></td>
       </tr>
   </table>
-
-  <table class="dataTable" id="servoTable">
-      <tr>
-        <th colspan="2">
-            <span id="servoTitle">Servos</span>
-            <div id="limSlider">
-                <span id="limSlider1">fixed</span><span id="limSlider2">lim</span><span id="limSlider3">fixed</span>
-            </div>
-        </th>
-      </tr>
-      <tr>
-          <td class="servoCanvasCell" id="infraredCell">
-              <span>Infrared (front):</span>
-              <br>
-              <span id="infrared1"></span>
-              <br>
-              <canvas id="infraredCanvas" width="200" height="200">
-              </canvas><span id="infrared2"></span>
-              <br><br>
-          </td>
-          <td class="servoCanvasCell" id="ultrasonicCell">
-              <span>Ultrasonic (top):</span>
-              <br>
-              <br><span id="ultrasonic1"></span>
-              <canvas id="ultrasonicCanvas" width="200" height="200">
-              </canvas>
-              <br>
-              <span id="ultrasonic2"></span>
-              <br>
-          </td>
-      </tr>
-  </table>
-
+  
   <div id="ultrasonicDiv">
-    <span id="ultrasonicTitle">Ultrasonic Module (Range: 150 cm)</span><br><br><br>
-    <canvas id="ultrasonicRangerCanvas" width="300" height="300"></canvas>
+    <span id="ultrasonicTitle">Ultrasonic Module (Range: 150 cm)</span>
     <div id="ultrasonicDetails">
-      <span id="stepper">0</span><span>&#176;</span>
-      <br>
-      <span id="ultrasonic">100</span><span> cm</span>
+      <span id="ultrasonic">0</span><span> cm</span>
     </div>
+  </div>
   </div>
 
 

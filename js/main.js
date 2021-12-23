@@ -1,19 +1,12 @@
 let websocket = new WebSocket("ws://192.168.0.234:6455");
 
-let lim_time = 0;
-let lim_state = false;
-
-let stepper = 0;
+let previousUltrasonicRange = 0;
+let lastReadings = [];
 
 let vertical_mouse_down = false;
 let horizontal_mouse_down = false;
 let current_vertical_touch = null;
 let current_horizontal_touch = null;
-
-let ultrasonic_mouse_down = false;
-let infrared_mouse_down = false;
-let current_ultrasonic_touch = null;
-let current_infrared_touch = null;
 
 let last_time = -100000000;
 let last_update_time = 0;
@@ -61,155 +54,17 @@ function partial_round(num, dist) {
     }
 }
 
-function drawInfraredCanvas(infraredCanvas, x, y) {
-    let infrared2 = document.getElementById("infrared2");
-    document.getElementById("infrared1").innerText = x;
-    infrared2.innerText = y;
-    infrared2.style.top = "calc(50% + " + x + "px)";
-    infraredCanvas.fillStyle = "white";
-    infraredCanvas.fillRect(0, 0, 200, 200);
-    infraredCanvas.fillStyle = "blue";
-    infraredCanvas.strokeStyle = "black";
-    infraredCanvas.fillRect(90, 0, 20, 200);
-    infraredCanvas.strokeRect(90, 0, 20, 200);
-    infraredCanvas.fillRect(0, 90 + x, 200, 20);
-    infraredCanvas.strokeRect(0, 90 + x, 200, 20);
-    infraredCanvas.fillStyle = "black";
-    infraredCanvas.fillRect(90 + y, 90 + x, 20, 20);
-}
-
-function drawUltrasonicCanvas(ultrasonicCanvas, x, y) {
-    let ultrasonic2 = document.getElementById("ultrasonic2");
-    document.getElementById("ultrasonic1").innerText = x;
-    ultrasonic2.innerText = y;
-    ultrasonic2.style.left = "calc(50% + " + x + "px)";
-    ultrasonicCanvas.fillStyle = "white";
-    ultrasonicCanvas.fillRect(0, 0, 200, 200);
-    ultrasonicCanvas.fillStyle = "blue";
-    ultrasonicCanvas.strokeStyle = "black";
-    ultrasonicCanvas.fillRect(0, 90, 200, 20);
-    ultrasonicCanvas.strokeRect(0, 90, 200, 20);
-    ultrasonicCanvas.fillRect(90 + x, 0, 20, 200);
-    ultrasonicCanvas.strokeRect(90 + x, 0, 20, 200);
-    ultrasonicCanvas.fillStyle = "black";
-    ultrasonicCanvas.fillRect(90 + x, 90 + y, 20, 20);
-}
-let ultrasonicCvs = document.getElementById("ultrasonicCanvas");
-let infraredCvs = document.getElementById("infraredCanvas");
-let ultrasonicCell = document.getElementById("ultrasonicCell");
-let infraredCell = document.getElementById("infraredCell");
-
-function passInfraredCanvas(e, update) {
-    if (!lim_state) {
-        let x = Math.round(clamp(e.clientX - infraredCvs.getBoundingClientRect().left - 100, -90, 90));
-        let y = Math.round(clamp(e.clientY - infraredCvs.getBoundingClientRect().top - 100, -90, 90));
-        if (update) {
-            updatePos(y, "infrared", 0);
-            updatePos(x, "infrared", 1);
-        }
-        drawInfraredCanvas(infraredCvs.getContext("2d"), y, x);
-    }
-}
-function passUltrasonicCanvas(e, update) {
-    document.getElementById('limSlider1').innerText = e.clientX;
-    if (!lim_state) {
-        let x = Math.round(clamp(e.clientX - ultrasonicCvs.getBoundingClientRect().left - 100, -90, 90));
-        let y = Math.round(clamp(e.clientY - ultrasonicCvs.getBoundingClientRect().top - 100, -90, 90));
-        if (update) {
-            updatePos(x, "ultrasonic", 0);
-            updatePos(y, "ultrasonic", 1);
-        }
-        drawUltrasonicCanvas(ultrasonicCvs.getContext("2d"), x, y);
-    }
-}
-
-ultrasonicCell.addEventListener('mousedown', e => {
-    ultrasonic_mouse_down = true;
-    passUltrasonicCanvas(e, false)
-});
-infraredCell.addEventListener('mousedown', e => {
-    infrared_mouse_down = true;
-    passInfraredCanvas(e, false);
-});
-ultrasonicCell.addEventListener('touchstart', e => {
-    if (e.targetTouches.length >= 1) {
-        touch = e.targetTouches.item(0);
-        passUltrasonicCanvas(touch, false);
-        current_ultrasonic_touch = touch.identifier;
-    }
-});
-infraredCell.addEventListener('touchstart', e => {
-    if (e.targetTouches.length >= 1) {
-        touch = e.targetTouches.item(0);
-        passInfraredCanvas(touch, false);
-        current_infrared_touch = touch.identifier;
-    }
-});
-
-ultrasonicCell.addEventListener('mousemove', e => {
-    if (ultrasonic_mouse_down) {
-        passUltrasonicCanvas(e, false);
-    }
-});
-infraredCell.addEventListener('mousemove', e => {
-    if (infrared_mouse_down) {
-        passInfraredCanvas(e, false);
-    }
-});
-ultrasonicCell.addEventListener('touchmove', e => {
-    if (current_ultrasonic_touch != null) {
-        let touch = null;
-        for (let i = 0; i < e.targetTouches.length; i++) {
-            if (e.targetTouches.item(i).identifier == current_ultrasonic_touch) {
-                touch = e.targetTouches.item(i);
-            }
-        }
-        if (touch != null) {
-            passUltrasonicCanvas(touch, false);
-        }
-    }
-});
-infraredCell.addEventListener('touchmove', e => {
-    if (current_infrared_touch != null) {
-        let touch = null;
-        for (let i = 0; i < e.targetTouches.length; i++) {
-            if (e.targetTouches.item(i).identifier == current_infrared_touch) {
-                touch = e.targetTouches.item(i);
-            }
-        }
-        if (touch != null) {
-            passInfraredCanvas(touch, false);
-        }
-    }
-});
-
-drawUltrasonicCanvas(document.getElementById("ultrasonicCanvas").getContext("2d"), 0, 0);
-drawInfraredCanvas(document.getElementById("infraredCanvas").getContext("2d"), 0, 0);
-
-
 websocket.onmessage = function (event) {
     let data = JSON.parse(event.data);
     switch (data.response) {
-        case "servos":
-            if (data.pin == 10) {
-                if (lim_state) {
-                    drawUltrasonicCanvas(document.getElementById("ultrasonicCanvas").getContext("2d"), data.positions[0], data.positions[1]);
-                }
-            } else if (data.pin == 11) {
-                if (lim_state) {
-                    drawInfraredCanvas(document.getElementById("infraredCanvas").getContext("2d"), data.positions[0], data.positions[1]);
-                }
-            }
-            break;
-        case "stepper":
-            break;
-        case "infrared":
-            document.getElementById("infrared").style.backgroundColor = data.infrared == true ? "red" : "lightskyblue";
-            break;
         case "motor":
             break;
+        case "camera":
+            document.getElementById("cameraImg").src = 'data:image/jpg;base64,' + data.image;
         case "ultrasonic":
-            document.getElementById("ultrasonic").innerText = clamp(Math.round(data.ultrasonic), 0, 150);
+            let ultrasonicNow = clamp(Math.round(data.ultrasonic), 0, 150);
+            document.getElementById("ultrasonic").innerText = ultrasonicNow;
+            lastReadings.push([data.time, ultrasonicNow]);
             break;
         case "gyroscope":
             data.gyroscope[1] = -data.gyroscope[1];
@@ -272,62 +127,15 @@ websocket.onmessage = function (event) {
     }
 }
 
-let limSlider = document.getElementById("limSlider");
-let limSlider3 = document.getElementById("limSlider3");
-
-function setLimFalse() {
-    lim_state = false;
-    limSlider.style.backgroundColor = "rgb(68, 194, 51)";
-    limSlider.style.borderColor = "rgb(68, 194, 51)";
-    limSlider3.style.left = "0%";
-    limSlider1.innerText = "";
-    limSlider2.innerText = "lim";
-    limSlider3.innerText = "fixed";
-    updateLim();
-}
-
-function setLimTrue() {
-    lim_state = true;
-    limSlider.style.backgroundColor = "gray";
-    limSlider.style.borderColor = "gray";
-    limSlider3.style.left = "50%";
-    limSlider1.innerText = "fixed";
-    limSlider2.innerText = "";
-    limSlider3.innerText = "lim";
-    updateLim();
-}
-
-let limHandler = e => {
-    if(new Date() / 1000 > lim_time + 0.5) {
-        lim_time = new Date() / 1000;
-        if (lim_state) {
-            setLimFalse();
-        } else {
-            setLimTrue();
-        }
-    }
-}
-limSlider.addEventListener('mousedown', limHandler);
-limSlider.addEventListener('touchstart', limHandler);
 
 let up = e => {
     vertical_mouse_down = false;
     horizontal_mouse_down = false;
-    if (ultrasonic_mouse_down) {
-        passUltrasonicCanvas(e, true);
-        ultrasonic_mouse_down = false;
-    }
-    if (infrared_mouse_down) {
-        passInfraredCanvas(e, true);
-        infrared_mouse_down = false;
-    }
 };
 window.addEventListener('mouseup', up);
 window.addEventListener('touchend', e => {
     let new_vertical_touch = null;
     let new_horizontal_touch = null;
-    let new_ultrasonic_touch = null;
-    let new_infrared_touch = null;
     for (let i = 0; i < e.touches.length; i++) {
         if (e.touches.item(i).identifier == current_vertical_touch) {
             new_vertical_touch = current_vertical_touch;
@@ -335,31 +143,9 @@ window.addEventListener('touchend', e => {
         if (e.touches.item(i).identifier == current_horizontal_touch) {
             new_horizontal_touch = current_horizontal_touch;
         }
-        if (e.touches.item(i).identifier == current_ultrasonic_touch) {
-            new_ultrasonic_touch = current_ultrasonic_touch;
-        }
-        if (e.touches.item(i).identifier == current_infrared_touch) {
-            new_infrared_touch = current_infrared_touch;
-        }
     }
     current_vertical_touch = new_vertical_touch;
     current_horizontal_touch = new_horizontal_touch;
-    if (new_ultrasonic_touch == null && current_ultrasonic_touch != null) {
-        let e = {
-            clientX: Number.parseInt(document.getElementById("ultrasonic1").innerText) + ultrasonicCvs.getBoundingClientRect().left + 100,
-            clientY: Number.parseInt(document.getElementById("ultrasonic2").innerText) + ultrasonicCvs.getBoundingClientRect().top + 100,
-        }
-        passUltrasonicCanvas(e, true);
-        current_ultrasonic_touch = new_ultrasonic_touch;
-    }
-    if (new_infrared_touch == null && current_infrared_touch != null) {
-        let e = {
-            clientX: Number.parseInt(document.getElementById("infrared2").innerText) + infraredCvs.getBoundingClientRect().left + 100,
-            clientY: Number.parseInt(document.getElementById("infrared1").innerText) + infraredCvs.getBoundingClientRect().top + 100,
-        }
-        passInfraredCanvas(e, true);
-        current_infrared_touch = new_infrared_touch;
-    }
 });
 window.addEventListener('touchmove', e => { e.preventDefault(); }, { passive: false });
 
@@ -494,6 +280,21 @@ vertical_slider.addEventListener('touchmove', e => {
     }
 });
 
+document.addEventListener("keydown", e => {
+    if (e.key == "ArrowLeft") { 
+        drive[1] = clamp(drive[1] - 10, -100, 100);
+    } else if (e.key == "ArrowUp") { 
+        drive[0] = clamp(drive[0] + 10, -100, 100);
+    } else if (e.key == "ArrowRight") { 
+        drive[1] = clamp(drive[1] + 10, -100, 100);
+    } else if (e.key == "ArrowDown") {
+        drive[0] = clamp(drive[0] - 10, -100, 100);
+    } else {
+        return;
+    }
+    updateMotorTable();
+});
+
 
 horizontal_slider.addEventListener('mousedown', e => {
     horizontal_mouse_down = true;
@@ -526,29 +327,6 @@ horizontal_slider.addEventListener('touchmove', e => {
     }
 });
 
-function updateLim() {
-    ["infrared", "ultrasonic"].forEach(chain => {
-        [0, 1].forEach(module => {
-            let msg = {
-                request: "servo",
-                chain: chain,
-                function: "lim",
-                module: module,
-                data: lim_state
-            }
-            websocket.send(JSON.stringify(msg));
-        });
-    });
-}
-
-function updateStepper(direction) {
-    let msg = {
-        request: "stepper",
-        direction: direction
-    };
-    websocket.send(JSON.stringify(msg));
-}
-
 function updateMotor(l, r) {
     let msg = {
         drive: [l, r],
@@ -557,33 +335,7 @@ function updateMotor(l, r) {
     websocket.send(JSON.stringify(msg));
 }
 
-function updateColour(r, g, b, chain, module) {
-    let msg = {
-        function: "colour",
-        request: "servo",
-        chain: chain,
-        module: module,
-        data: [r, g, b]
-    }
-    websocket.send(JSON.stringify(msg));
-}
-
-function updatePos(pos, chain, module) {
-    let msg = {
-        function: "pos",
-        request: "servo",
-        chain: chain,
-        module: module,
-        data: pos
-    }
-    websocket.send(JSON.stringify(msg));
-}
-
 websocket.onopen = e => {
     updateMotorTable();
-    let ultrasonicRangingCanvas = document.getElementById("ultrasonicRangerCanvas").getContext("2d");
-    ultrasonicRangingCanvas.strokeStyle = "black";
-    ultrasonicRangingCanvas.beginPath();
-    ultrasonicRangingCanvas.arc(150, 150, 150, 0, 2 * Math.PI);
-    ultrasonicRangingCanvas.stroke();
 };
+
