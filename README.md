@@ -5,5 +5,7 @@ The website features:
 - Motor Control
 - Gyroscope/accelerometer data table
 - Ultrasonic ranging display
+## User Interface
+![UI.png](https://github.com/jcroskery/logi-robot-frontend/blob/logi/UI.png?raw=true)
 ## More Details
 For more details, see the [backend repository](https://github.com/jcroskery/rpr) for the robot.
