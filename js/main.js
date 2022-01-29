@@ -1,4 +1,4 @@
-let websocket = new WebSocket("ws://192.168.0.234:6455");
+let websocket = new WebSocket("ws://192.168.0.19:6455");
 
 let previousUltrasonicRange = 0;
 let lastReadings = [];
@@ -56,15 +56,15 @@ function partial_round(num, dist) {
 
 websocket.onmessage = function (event) {
     let data = JSON.parse(event.data);
-    switch (data.response) {
+    switch (data.response) { 
         case "motor":
             break;
         case "camera":
             document.getElementById("cameraImg").src = 'data:image/jpg;base64,' + data.image;
+            break;
         case "ultrasonic":
-            let ultrasonicNow = clamp(Math.round(data.ultrasonic), 0, 150);
+            let ultrasonicNow = clamp(Math.round(data.ultrasonic), 0, 400);
             document.getElementById("ultrasonic").innerText = ultrasonicNow;
-            lastReadings.push([data.time, ultrasonicNow]);
             break;
         case "gyroscope":
             data.gyroscope[1] = -data.gyroscope[1];
@@ -192,9 +192,31 @@ function updateVerticalSlider(y) {
     updateMotorTable();
 }
 
+function turnValueToMotorWhenStopped(x) {
+    let absx = (100 - x) / 10.0;
+    return Math.round(0.5 * (100 - absx * absx + x));
+}
+
+function turnValueToMotorWhenDriving(x) {
+    return Math.sign(x) * Math.round(0.5 * (x * x / 100 + Math.abs(x)));
+}
+
+function speedValueToMotor(x) {
+    let absx = (100 - Math.abs(x)) / 10.0;
+    return Math.sign(x) * Math.round(0.5 * (100 - absx * absx + Math.abs(x)));
+}
+
+function turnValueToMotor(x, speed) {
+    if (speed === 0) {
+        return turnValueToMotorWhenStopped(x);
+    } else {
+        return turnValueToMotorWhenDriving(x);
+    }
+}
+
 function updateMotorTable() {
-    let left = Math.ceil(clamp(drive[0] + Math.sign(drive[1]) * (drive[1] * drive[1]) / 200 + 0.5 * drive[1], -100, 100));
-    let right = Math.ceil(clamp(drive[0] - Math.sign(drive[1]) * (drive[1] * drive[1]) / 200 - 0.5 * drive[1], -100, 100));
+    let left = Math.ceil(clamp(speedValueToMotor(drive[0]) + turnValueToMotor(drive[1], drive[0]), -100, 100));
+    let right = Math.ceil(clamp(speedValueToMotor(drive[0]) - turnValueToMotor(drive[1], drive[0]), -100, 100));
     document.getElementById("drive").innerText = "Drive: " + drive[0];
     document.getElementById("turn").innerText = "Turn: " + drive[1];
     document.getElementById("left").innerText = "L: " + left;
@@ -280,19 +302,35 @@ vertical_slider.addEventListener('touchmove', e => {
     }
 });
 
+let oldDrive = [0, 0];
+
 document.addEventListener("keydown", e => {
     if (e.key == "ArrowLeft") { 
         drive[1] = clamp(drive[1] - 10, -100, 100);
+        updateMotorTable();
     } else if (e.key == "ArrowUp") { 
         drive[0] = clamp(drive[0] + 10, -100, 100);
+        updateMotorTable();
     } else if (e.key == "ArrowRight") { 
         drive[1] = clamp(drive[1] + 10, -100, 100);
+        updateMotorTable();
     } else if (e.key == "ArrowDown") {
         drive[0] = clamp(drive[0] - 10, -100, 100);
-    } else {
-        return;
+        updateMotorTable();
+    } else if (e.key == " ") {
+        console.log(oldDrive)
+        if (drive[0] == 0 && drive[1] == 0) {
+            drive[0] = oldDrive[0];
+            drive[1] = oldDrive[1];
+        } else {
+            oldDrive[0] = drive[0];
+            oldDrive[1] = drive[1];
+            drive[0] = 0;
+            drive[1] = 0;
+        }
+        updateMotorTable();
     }
-    updateMotorTable();
+    
 });
 
 
@@ -339,3 +377,16 @@ websocket.onopen = e => {
     updateMotorTable();
 };
 
+let isFullScreen = false;
+let fullscreenHandler = e => {
+    let cameraImg = document.getElementById("cameraImg");
+    if (isFullScreen) {
+        document.exitFullscreen();
+    } else {
+        cameraImg.requestFullscreen();
+    }
+    isFullScreen = !isFullScreen;
+}
+
+document.getElementById("cameraImg").addEventListener('mousedown', fullscreenHandler);
+document.getElementById("cameraImg").addEventListener('touchstart', fullscreenHandler);
